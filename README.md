@@ -7,4 +7,4 @@ Trabalho do Professor Ranghetti, Aulas de SpringBoot
 ### Diego Macedo - RA: 4558
 ### João Guilherme Santos - RA:
 ### Arthur Tomba - RA: 13631
-### Giovanni Bertoni - RA: 14272
+### Giovani Bertoni - RA: 14272
