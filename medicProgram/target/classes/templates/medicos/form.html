@@ -3,6 +3,15 @@
 <body>
 <div th:replace="fragments/nav :: nav"></div>
 
+<!-- Container para mensagens de erro -->
+<div id="alertContainer" class="container mt-3" style="max-width: 800px; display: none;">
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        <span id="alertMessage"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+</div>
+
 <main class="container mt-4">
     <div class="row justify-content-center">
         <div class="col-md-8">
@@ -12,7 +21,7 @@
                     <span th:text="${medico.id} ? 'Editar Médico' : 'Novo Médico'"></span>
                 </h2>
 
-                <form th:action="@{/medicos}" th:object="${medico}" method="post">
+                <form th:action="@{/medicos}" th:object="${medico}" method="post" id="medicoForm">
                     <input type="hidden" th:field="*{id}">
 
                     <div class="mb-3">
@@ -23,11 +32,60 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="crm" class="form-label">CRM</label>
-                            <input type="text" class="form-control" id="crm" th:field="*{crm}" required>
+                            <input type="text" class="form-control" id="crm" th:field="*{crm}" required
+                                   placeholder="123456/SP" maxlength="9">
+                            <div class="invalid-feedback">
+                                Formato inválido. Use: 6 dígitos + / + sigla do estado (ex: 123456/SP)
+                            </div>
+                            <small class="text-muted">Exemplo: 123456/SP</small>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="especialidade" class="form-label">Especialidade</label>
-                            <input type="text" class="form-control" id="especialidade" th:field="*{especialidade}" required>
+                            <select class="form-select" id="especialidade" th:field="*{especialidade}" required>
+                                <option value="">Selecione uma especialidade</option>
+                                <option value="Acupuntura">Acupuntura</option>
+                                <option value="Alergia e Imunologia">Alergia e Imunologia</option>
+                                <option value="Anestesiologia">Anestesiologia</option>
+                                <option value="Angiologia">Angiologia</option>
+                                <option value="Cardiologia">Cardiologia</option>
+                                <option value="Cirurgia Cardiovascular">Cirurgia Cardiovascular</option>
+                                <option value="Cirurgia Geral">Cirurgia Geral</option>
+                                <option value="Cirurgia Plástica">Cirurgia Plástica</option>
+                                <option value="Clínica Médica">Clínica Médica</option>
+                                <option value="Dermatologia">Dermatologia</option>
+                                <option value="Endocrinologia">Endocrinologia</option>
+                                <option value="Gastroenterologia">Gastroenterologia</option>
+                                <option value="Genética Médica">Genética Médica</option>
+                                <option value="Geriatria">Geriatria</option>
+                                <option value="Ginecologia e Obstetrícia">Ginecologia e Obstetrícia</option>
+                                <option value="Hematologia">Hematologia</option>
+                                <option value="Homeopatia">Homeopatia</option>
+                                <option value="Infectologia">Infectologia</option>
+                                <option value="Mastologia">Mastologia</option>
+                                <option value="Medicina de Emergência">Medicina de Emergência</option>
+                                <option value="Medicina do Trabalho">Medicina do Trabalho</option>
+                                <option value="Medicina Esportiva">Medicina Esportiva</option>
+                                <option value="Medicina Física e Reabilitação">Medicina Física e Reabilitação</option>
+                                <option value="Medicina Intensiva">Medicina Intensiva</option>
+                                <option value="Medicina Nuclear">Medicina Nuclear</option>
+                                <option value="Nefrologia">Nefrologia</option>
+                                <option value="Neurocirurgia">Neurocirurgia</option>
+                                <option value="Neurologia">Neurologia</option>
+                                <option value="Nutrologia">Nutrologia</option>
+                                <option value="Oftalmologia">Oftalmologia</option>
+                                <option value="Oncologia">Oncologia</option>
+                                <option value="Ortopedia">Ortopedia</option>
+                                <option value="Otorrinolaringologia">Otorrinolaringologia</option>
+                                <option value="Patologia">Patologia</option>
+                                <option value="Pediatria">Pediatria</option>
+                                <option value="Pneumologia">Pneumologia</option>
+                                <option value="Psiquiatria">Psiquiatria</option>
+                                <option value="Radiologia">Radiologia</option>
+                                <option value="Radioterapia">Radioterapia</option>
+                                <option value="Reumatologia">Reumatologia</option>
+                                <option value="Urologia">Urologia</option>
+                                <option value="Outra">Outra</option>
+                            </select>
                         </div>
                     </div>
 
@@ -48,5 +106,130 @@
 <div th:replace="fragments/footer :: footer"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Lista de siglas de estados brasileiros
+    const estadosBR = ['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS',
+                      'MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC',
+                      'SP','SE','TO'];
+
+    // Mostrar/ocultar campo "Outra especialidade"
+    document.getElementById('especialidade').addEventListener('change', function(e) {
+        const outraContainer = document.getElementById('outraEspecialidadeContainer');
+        const outraInput = document.getElementById('outraEspecialidade');
+
+        if (e.target.value === 'Outra') {
+            outraContainer.style.display = 'block';
+            outraInput.required = true;
+        } else {
+            outraContainer.style.display = 'none';
+            outraInput.required = false;
+            outraInput.value = ''; // Limpa o valor quando não é "Outra"
+        }
+    });
+
+    // Máscara para CRM (123456/SP)
+    document.getElementById('crm').addEventListener('input', function(e) {
+        let value = e.target.value.toUpperCase();
+
+        if (value.includes('/')) {
+            const parts = value.split('/');
+            parts[0] = parts[0].replace(/\D/g, '').substring(0, 6);
+            if (parts.length > 1) {
+                parts[1] = parts[1].replace(/[^A-Z]/g, '').substring(0, 2);
+            }
+            value = parts.join('/');
+        } else {
+            value = value.replace(/\D/g, '').substring(0, 6);
+        }
+
+        e.target.value = value;
+        validateField(e.target);
+    });
+
+    // Validação em tempo real dos campos
+    function validateField(field) {
+        if (field.id === 'crm') {
+            const parts = field.value.split('/');
+            const isValid = parts.length === 2 &&
+                          /^\d{6}$/.test(parts[0]) &&
+                          estadosBR.includes(parts[1]);
+
+            field.classList.toggle('is-invalid', !isValid);
+            field.classList.toggle('is-valid', isValid);
+        } else if (field.id === 'especialidade') {
+            const isValid = field.value.trim() !== '';
+            field.classList.toggle('is-invalid', !isValid);
+            field.classList.toggle('is-valid', isValid);
+        }
+    }
+
+    // Função para mostrar erro estilizado
+    function showError(message) {
+        const alertContainer = document.getElementById('alertContainer');
+        const alertMessage = document.getElementById('alertMessage');
+
+        alertMessage.innerHTML = message;
+        alertContainer.style.display = 'block';
+
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    }
+
+    // Validação antes do envio do formulário
+    document.getElementById('medicoForm').addEventListener('submit', function(e) {
+        const crm = document.getElementById('crm');
+        const especialidade = document.getElementById('especialidade');
+        const outraEspecialidade = document.getElementById('outraEspecialidade');
+        let isValid = true;
+
+        document.getElementById('alertContainer').style.display = 'none';
+
+        // Validação do CRM
+        const crmParts = crm.value.split('/');
+        if (crmParts.length !== 2 || !/^\d{6}$/.test(crmParts[0]) || !estadosBR.includes(crmParts[1])) {
+            crm.classList.add('is-invalid');
+            showError('<strong>CRM inválido:</strong> Formato correto: 6 dígitos + / + sigla do estado (ex: 123456/SP)');
+            isValid = false;
+        }
+
+        // Validação da Especialidade
+        if (especialidade.value.trim() === '') {
+            especialidade.classList.add('is-invalid');
+            showError('<strong>Especialidade requerida:</strong> Por favor, selecione uma especialidade');
+            isValid = false;
+        }
+
+        // Validação especial para "Outra" especialidade
+        if (especialidade.value === 'Outra' && outraEspecialidade.value.trim() === '') {
+            document.getElementById('outraEspecialidadeContainer').querySelector('input').classList.add('is-invalid');
+            showError('<strong>Especialidade requerida:</strong> Por favor, informe a especialidade');
+            isValid = false;
+        }
+
+        if (!isValid) {
+            e.preventDefault();
+            const firstInvalid = document.querySelector('.is-invalid');
+            if (firstInvalid) {
+                firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        } else {
+            // Se for "Outra", atualiza o valor da especialidade com o texto digitado
+            if (especialidade.value === 'Outra') {
+                especialidade.value = outraEspecialidade.value.trim();
+            }
+        }
+    });
+
+    // Validação ao sair do campo
+    document.getElementById('crm').addEventListener('blur', function(e) {
+        validateField(e.target);
+    });
+
+    document.getElementById('especialidade').addEventListener('change', function(e) {
+        validateField(e.target);
+    });
+</script>
 </body>
 </html>
