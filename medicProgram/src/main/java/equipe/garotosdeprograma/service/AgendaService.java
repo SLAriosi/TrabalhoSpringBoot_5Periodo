@@ -3,6 +3,7 @@ package equipe.garotosdeprograma.service;
 import equipe.garotosdeprograma.model.Agenda;
 import equipe.garotosdeprograma.repository.AgendaRepository;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 
 @Service
@@ -22,7 +23,7 @@ public class AgendaService {
     }
 
     public Agenda buscarPorId(Long id) {
-        return agendaRepository.findById(id).orElse(null);
+        return agendaRepository.findById(id).orElseThrow(() -> new RuntimeException("Agenda não encontrada"));
     }
 
     public void excluir(Long id) {

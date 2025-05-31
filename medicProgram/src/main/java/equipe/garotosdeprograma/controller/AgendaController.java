@@ -8,7 +8,11 @@ import equipe.garotosdeprograma.service.MedicoService;
 import equipe.garotosdeprograma.service.PacienteService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Controller
@@ -38,11 +42,14 @@ public class AgendaController {
         model.addAttribute("agenda", new Agenda());
         model.addAttribute("medicos", medicos);
         model.addAttribute("pacientes", pacientes);
+
+        String agora = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"));
+        model.addAttribute("agora", agora);
         return "agenda/form";
     }
 
     @PostMapping
-    public String salvarAgendamento(@ModelAttribute Agenda agenda) {
+    public String salvarAgendamento(@Validated @ModelAttribute Agenda agenda) {
         agendaService.salvar(agenda);
         return "redirect:/agenda";
     }
@@ -56,6 +63,9 @@ public class AgendaController {
         model.addAttribute("agenda", agenda);
         model.addAttribute("medicos", medicos);
         model.addAttribute("pacientes", pacientes);
+
+        String agora = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"));
+        model.addAttribute("agora", agora);
         return "agenda/form";
     }
 
