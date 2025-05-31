@@ -4,6 +4,7 @@ import equipe.garotosdeprograma.model.Paciente;
 import equipe.garotosdeprograma.service.PacienteService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
@@ -28,7 +29,7 @@ public class PacienteController {
     }
 
     @PostMapping
-    public String salvarPaciente(@ModelAttribute Paciente paciente) {
+    public String salvarPaciente(@Validated @ModelAttribute Paciente paciente) {
         pacienteService.salvar(paciente);
         return "redirect:/pacientes";
     }
